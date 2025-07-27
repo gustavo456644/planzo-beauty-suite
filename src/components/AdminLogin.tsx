@@ -37,14 +37,23 @@ export function AdminLogin({ onSuccess }: AdminLoginProps) {
           return;
         }
 
-        toast({
-          title: "Conta criada!",
-          description: "Agora você pode fazer login.",
-        });
-        setIsSignUp(false);
-        setName('');
-        setEmail('');
-        setPassword('');
+        // Após criar conta admin, fazer login automaticamente
+        const { error: loginError } = await signIn(email, password);
+        
+        if (loginError) {
+          toast({
+            title: "Conta criada, mas erro no login",
+            description: "Tente fazer login manualmente.",
+            variant: "destructive",
+          });
+          setIsSignUp(false);
+          setName('');
+          setPassword('');
+          return;
+        }
+        
+        // Login bem-sucedido, onSuccess será chamado
+        onSuccess();
       } else {
         const { error } = await signIn(email, password);
         

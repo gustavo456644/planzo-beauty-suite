@@ -121,10 +121,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return { error: error.message };
       }
 
-      toast({
-        title: "Conta criada com sucesso!",
-        description: "Você já pode fazer login na sua conta.",
-      });
+      // Para admin, não mostra toast pois vai fazer login automaticamente
+      if (userData.role !== 'admin') {
+        toast({
+          title: "Conta criada com sucesso!",
+          description: "Você já pode fazer login na sua conta.",
+        });
+      }
 
       return {};
     } catch (error) {
