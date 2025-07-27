@@ -15,7 +15,9 @@ export function AdminLogin({ onSuccess }: AdminLoginProps) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const { signIn } = useAuth();
+  const [isSignUp, setIsSignUp] = useState(false);
+  const [name, setName] = useState('');
+  const { signIn, signUp } = useAuth();
   const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -23,22 +25,44 @@ export function AdminLogin({ onSuccess }: AdminLoginProps) {
     setLoading(true);
 
     try {
-      const { error } = await signIn(email, password);
-      
-      if (error) {
+      if (isSignUp) {
+        const { error } = await signUp(email, password, { name, role: 'admin' });
+        
+        if (error) {
+          toast({
+            title: "Erro no cadastro",
+            description: error,
+            variant: "destructive",
+          });
+          return;
+        }
+
         toast({
-          title: "Erro no login",
-          description: error,
-          variant: "destructive",
+          title: "Conta criada!",
+          description: "Agora você pode fazer login.",
         });
-        return;
+        setIsSignUp(false);
+        setName('');
+        setEmail('');
+        setPassword('');
+      } else {
+        const { error } = await signIn(email, password);
+        
+        if (error) {
+          toast({
+            title: "Erro no login",
+            description: error,
+            variant: "destructive",
+          });
+          return;
+        }
+        
+        onSuccess();
       }
-      
-      onSuccess();
     } catch (error) {
       toast({
         title: "Erro",
-        description: "Erro inesperado ao fazer login",
+        description: "Erro inesperado",
         variant: "destructive",
       });
     } finally {
@@ -55,15 +79,29 @@ export function AdminLogin({ onSuccess }: AdminLoginProps) {
           </div>
           <div>
             <CardTitle className="text-2xl font-bold text-beauty-black">
-              Painel Administrativo
+              {isSignUp ? 'Criar Conta Admin' : 'Painel Administrativo'}
             </CardTitle>
             <CardDescription className="text-muted-foreground">
-              Faça login para gerenciar seu estúdio
+              {isSignUp ? 'Crie sua conta de administrador' : 'Faça login para gerenciar seu estúdio'}
             </CardDescription>
           </div>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
+            {isSignUp && (
+              <div className="space-y-2">
+                <Label htmlFor="name">Nome</Label>
+                <Input
+                  id="name"
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="Seu nome"
+                  required
+                  className="h-12"
+                />
+              </div>
+            )}
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input
@@ -95,9 +133,25 @@ export function AdminLogin({ onSuccess }: AdminLoginProps) {
               className="w-full"
               disabled={loading}
             >
-              {loading ? 'Entrando...' : 'Entrar'}
+              {loading 
+                ? (isSignUp ? 'Criando conta...' : 'Entrando...') 
+                : (isSignUp ? 'Criar conta' : 'Entrar')
+              }
             </Button>
           </form>
+          
+          <div className="mt-6 text-center">
+            <Button
+              variant="link"
+              onClick={() => setIsSignUp(!isSignUp)}
+              className="text-primary"
+            >
+              {isSignUp 
+                ? 'Já tem conta? Fazer login' 
+                : 'Não tem conta? Criar conta'
+              }
+            </Button>
+          </div>
         </CardContent>
       </Card>
     </div>

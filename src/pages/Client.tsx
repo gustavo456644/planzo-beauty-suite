@@ -3,6 +3,9 @@ import { useAuth } from '@/hooks/useAuth';
 import { ClientAuth } from '@/components/ClientAuth';
 import { BottomNavigation } from '@/components/BottomNavigation';
 import { ClientHome } from '@/components/client/ClientHome';
+import { ClientServices } from '@/components/client/ClientServices';
+import { ClientProfessionals } from '@/components/client/ClientProfessionals';
+import { ClientAbout } from '@/components/client/ClientAbout';
 import { Button } from '@/components/ui/button';
 import { LogOut } from 'lucide-react';
 
@@ -80,42 +83,11 @@ export default function Client() {
           </div>
         );
       case 'services':
-        return (
-          <div className="text-center py-20">
-            <h2 className="text-2xl font-bold mb-4">Serviços</h2>
-            <p className="text-muted-foreground">Em desenvolvimento...</p>
-          </div>
-        );
+        return <ClientServices />;
       case 'professionals':
-        return (
-          <div className="text-center py-20">
-            <h2 className="text-2xl font-bold mb-4">Profissionais</h2>
-            <p className="text-muted-foreground">Em desenvolvimento...</p>
-          </div>
-        );
+        return <ClientProfessionals />;
       case 'about':
-        return (
-          <div className="space-y-6 pb-20">
-            <div className="text-center py-6">
-              <h2 className="text-2xl font-bold mb-4">Sobre Nós</h2>
-            </div>
-            <div className="space-y-4">
-              <p className="text-muted-foreground text-center">
-                Em desenvolvimento...
-              </p>
-              {isClientLoggedIn && (
-                <Button 
-                  variant="destructive" 
-                  className="w-full justify-start h-12"
-                  onClick={handleSignOut}
-                >
-                  <LogOut className="h-4 w-4 mr-2" />
-                  Sair
-                </Button>
-              )}
-            </div>
-          </div>
-        );
+        return <ClientAbout onSignOut={handleSignOut} />;
       default:
         return (
           <ClientHome 
